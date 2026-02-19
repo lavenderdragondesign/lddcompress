@@ -1,5 +1,7 @@
 [build]
-  command = "npm ci --no-audit --no-fund && npm run build"
+  # package-lock.json is not committed in this repo, so we can't use `npm ci`.
+  # Use a stable Node version + a deterministic-ish install.
+  command = "npm install --no-audit --no-fund --legacy-peer-deps && npm run build"
   publish = "dist"
 
 [build.environment]
