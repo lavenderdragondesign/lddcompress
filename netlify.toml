@@ -1,14 +1,11 @@
 [build]
-  # package-lock.json is not committed in this repo, so we can't use `npm ci`.
-  # Use a stable Node version + a deterministic-ish install.
-  command = "npm install --no-audit --no-fund --legacy-peer-deps && npm run build"
+  command = "npm i -g npm@9.9.2 && npm --version && npm install --legacy-peer-deps --no-audit --no-fund && npm run build"
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--no-audit --no-fund"
-  # Speeds up installs a bit and avoids some legacy peer resolution stalls
-  NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+  NODE_VERSION = "20.11.1"
+  NPM_FLAGS = "--legacy-peer-deps"
+
 
 [[redirects]]
   from = "/*"
