@@ -1,13 +1,6 @@
 [build]
-  command = "npm i -g npm@9.9.2 && npm --version && npm install --legacy-peer-deps --no-audit --no-fund && npm run build"
+  command = "corepack enable && corepack prepare pnpm@9.15.4 --activate && pnpm --version && pnpm install --no-frozen-lockfile && pnpm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20.11.1"
-  NPM_FLAGS = "--legacy-peer-deps"
-
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
