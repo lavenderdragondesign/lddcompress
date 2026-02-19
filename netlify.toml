@@ -1,8 +1,13 @@
 [build]
-  command = "npm run build"
+  command = "npm ci --no-audit --no-fund && npm run build"
   publish = "dist"
 
-# If you later add client-side routing, Netlify will still serve index.html
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--no-audit --no-fund"
+  # Speeds up installs a bit and avoids some legacy peer resolution stalls
+  NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
