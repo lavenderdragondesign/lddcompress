@@ -1,0 +1,5 @@
+{
+  "name": "Etsy Print-Ready PNG Optimizer",
+  "description": "A high-performance PNG compressor and packager that optimizes images for Etsy sellers, injecting 300 DPI metadata and splitting files into 20MB ZIP parts automatically.",
+  "requestFramePermissions": []
+}

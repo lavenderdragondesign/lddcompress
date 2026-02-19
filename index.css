@@ -1,0 +1,8 @@
+/* Minimal global styles (Tailwind is loaded via CDN in index.html) */
+
+/* Hide scrollbar utility used in the app */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smoother fonts */
+html, body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
