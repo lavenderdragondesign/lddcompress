@@ -23,6 +23,7 @@ export interface AppState {
   results: ProcessedResult[];
   totalOriginalSize: number;
   totalNewSize: number;
+  inputCount: number; // number of images ingested after ZIP extraction
   error?: string;
   squeezeAttempt: number;
   eta: number | null; // Estimated seconds remaining

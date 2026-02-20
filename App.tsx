@@ -19,6 +19,7 @@ const App: React.FC = () => {
     results: [],
     totalOriginalSize: 0,
     totalNewSize: 0,
+    inputCount: 0,
     squeezeAttempt: 0,
     eta: null,
   });
@@ -99,7 +100,8 @@ const App: React.FC = () => {
       error: undefined, 
       eta: null, 
       currentFileUrl: null,
-      totalOriginalSize: initialInputSize // Track what the user actually uploaded
+      totalOriginalSize: initialInputSize, // Track what the user actually uploaded
+      inputCount: inputFiles.length
     }));
     
     startTimeRef.current = Date.now();
@@ -211,6 +213,9 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
       }
 
       workListRef.current = flattenedWorkList;
+
+      // Use the true image count (after ZIP extraction) for UI logic
+      setState(prev => ({ ...prev, inputCount: flattenedWorkList.length }));
 
       if (flattenedWorkList.length === 0) {
         setState(prev => ({ ...prev, status: 'idle', error: 'No valid image files found.' }));
@@ -469,7 +474,7 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
         <FinishModal 
           originalSize={state.totalOriginalSize}
           newSize={state.totalNewSize}
-          fileCount={state.results.length}
+          fileCount={state.inputCount || state.results.length}
           hasJpeg={state.results.some(r => r.mimeType === 'image/jpeg' || /\.jpe?g$/i.test(r.name))}
           hasNonJpeg={state.results.some(r => !(r.mimeType === 'image/jpeg' || /\.jpe?g$/i.test(r.name)))}
           onRestart={() => setState(prev => ({ ...prev, status: 'idle' }))}
