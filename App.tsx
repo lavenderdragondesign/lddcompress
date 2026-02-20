@@ -331,7 +331,7 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
 
   return (
     <div className="min-h-screen flex bg-[#020202] text-zinc-100 font-sans overflow-hidden">
-      <main className="flex-1 flex flex-col items-center justify-start py-12 md:py-16 px-8 relative overflow-y-auto scrollbar-hide">
+      <main className="flex-1 flex flex-col items-center justify-start py-12 md:py-16 px-8 relative overflow-hidden scrollbar-hide">
         {/* User Logo Top Left */}
         <div className="absolute top-8 left-8 z-10 animate-in fade-in duration-1000">
            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.2)] bg-zinc-900">
@@ -355,30 +355,16 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
             {isSystemReady ? 'Turbo Engine Primed' : 'Engine Warming...'}
           </div>
 
-          {/* Beta Badge */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.35em] text-white shadow-[0_0_20px_rgba(255,255,255,0.06)]">
-              <span className="inline-flex h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.55)]" />
-              Beta
-            </div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border border-yellow-500/25 rounded-full text-[11px] font-black uppercase tracking-[0.35em] text-yellow-300 mb-4 shadow-2xl">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-yellow-400" />
+            Beta
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-black italic uppercase text-emerald-500 mb-2 leading-[0.9] flex flex-col items-center">
             <span className="text-white tracking-tighter">LavenderDragonDesign's</span>
             <span className="text-5xl md:text-7xl tracking-[0.05em] py-2 select-none">IMAGE COMPRESSOR</span>
             <span className="tracking-normal"> & ZIP SPLITTER</span>
           </h1>
-
-          {/* Beta warning / performance note */}
-          <div className="mx-auto mt-4 max-w-3xl">
-            <div className="inline-block text-left px-4 py-3 bg-zinc-950/60 border border-amber-400/20 rounded-2xl shadow-[0_0_30px_rgba(251,191,36,0.06)]">
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-amber-300/90 mb-1">Heads up</p>
-              <p className="text-xs md:text-sm text-white/90 leading-relaxed">
-                This tool is still in beta — you may see <span className="font-semibold text-white">bugs</span>, <span className="font-semibold text-white">crashes</span>, or <span className="font-semibold text-white">freezes</span> depending on how many images you feed it and what your computer can handle.
-                <span className="block mt-1 text-white/80 italic font-semibold">We’re optimizing it as we speak.</span>
-              </p>
-            </div>
-          </div>
 
           <p className="text-white text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed mt-6">
             Professional image optimization & intelligent ZIP splitting. 
@@ -404,7 +390,7 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
         )}
       </main>
 
-      <aside className="w-96 bg-zinc-900/30 border-l border-zinc-800 p-8 flex flex-col justify-between shrink-0 overflow-y-auto">
+      <aside className="w-96 bg-zinc-900/30 border-l border-zinc-800 p-8 flex flex-col justify-between shrink-0 overflow-hidden">
         <div className="space-y-12">
           <div>
             <h4 className="text-emerald-400 font-black uppercase tracking-[0.3em] text-xs mb-8 border-b border-emerald-500/20 pb-2">The Workflow</h4>
@@ -434,6 +420,13 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
               {['PNG','JPG','WebP','ZIP'].map(t => (
                 <span key={t} className="px-3 py-1.5 bg-zinc-800 rounded-lg text-[10px] font-black text-white uppercase tracking-widest border border-zinc-700/50">{t}</span>
               ))}
+            </div>
+
+            <div className="mt-4 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-left">
+              <p className="text-[11px] text-white/90 font-semibold leading-relaxed">
+                <span className="text-yellow-300 font-black uppercase tracking-widest mr-2">Heads up:</span>
+                This is beta. With a lot of images (and depending on your computer specs), you may see bugs, crashes, or freezes. We’re optimizing it as we speak.
+              </p>
             </div>
           </div>
         </div>
