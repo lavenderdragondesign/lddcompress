@@ -354,12 +354,31 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
             </span>
             {isSystemReady ? 'Turbo Engine Primed' : 'Engine Warming...'}
           </div>
+
+          {/* Beta Badge */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.35em] text-white shadow-[0_0_20px_rgba(255,255,255,0.06)]">
+              <span className="inline-flex h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.55)]" />
+              Beta
+            </div>
+          </div>
           
           <h1 className="text-4xl md:text-6xl font-black italic uppercase text-emerald-500 mb-2 leading-[0.9] flex flex-col items-center">
             <span className="text-white tracking-tighter">LavenderDragonDesign's</span>
             <span className="text-5xl md:text-7xl tracking-[0.05em] py-2 select-none">IMAGE COMPRESSOR</span>
             <span className="tracking-normal"> & ZIP SPLITTER</span>
           </h1>
+
+          {/* Beta warning / performance note */}
+          <div className="mx-auto mt-4 max-w-3xl">
+            <div className="inline-block text-left px-4 py-3 bg-zinc-950/60 border border-amber-400/20 rounded-2xl shadow-[0_0_30px_rgba(251,191,36,0.06)]">
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-amber-300/90 mb-1">Heads up</p>
+              <p className="text-xs md:text-sm text-white/90 leading-relaxed">
+                This tool is still in beta — you may see <span className="font-semibold text-white">bugs</span>, <span className="font-semibold text-white">crashes</span>, or <span className="font-semibold text-white">freezes</span> depending on how many images you feed it and what your computer can handle.
+                <span className="block mt-1 text-white/80 italic font-semibold">We’re optimizing it as we speak.</span>
+              </p>
+            </div>
+          </div>
 
           <p className="text-white text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed mt-6">
             Professional image optimization & intelligent ZIP splitting. 
