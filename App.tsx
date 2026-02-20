@@ -25,13 +25,16 @@ const App: React.FC = () => {
   });
 
   const [isSystemReady, setIsSystemReady] = useState(false);
+  const [workerProfile, setWorkerProfile] = useState<{ cores: number; mem: number | null; workers: number; tier: string } | null>(null);
   const workerPool = useRef<Worker[]>([]);
   const startTimeRef = useRef<number>(0);
   const workListRef = useRef<ProcessingFile[]>([]);
 
   // Pick a worker count that uses as much horsepower as possible without
   // freezing low-RAM machines. Browsers only expose coarse hints.
-  const decideWorkerCount = () => {
+  const decideWorkerProfile = () => {
+    const ua = navigator.userAgent || '';
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
     const cores = Math.max(1, navigator.hardwareConcurrency || 4);
     const mem = (navigator as any).deviceMemory as number | undefined; // GB-ish (Chrome/Edge)
 
@@ -42,7 +45,7 @@ const App: React.FC = () => {
     let maxByMem: number;
     if (mem == null) {
       // Unknown RAM (Safari/Firefox): conservative but still fast.
-      maxByMem = 6;
+      maxByMem = 4;
     } else if (mem <= 1) {
       maxByMem = 1;
     } else if (mem <= 2) {
@@ -57,14 +60,30 @@ const App: React.FC = () => {
       maxByMem = 12;
     }
 
-    return Math.max(1, Math.min(maxByCpu, maxByMem));
+    // Mobile browsers tend to throttle hard and memory pressure is brutal.
+    const maxByDevice = isMobile ? 2 : 999;
+    const workers = Math.max(1, Math.min(maxByCpu, maxByMem, maxByDevice));
+
+    const memVal = mem == null ? null : mem;
+    const tier = (() => {
+      if (isMobile) return 'Mobile';
+      if (memVal != null && memVal <= 4) return 'Low';
+      if (memVal != null && memVal <= 8) return 'Mid';
+      if (memVal != null && memVal <= 16) return 'High';
+      if (cores >= 12) return 'Beast';
+      return 'Standard';
+    })();
+
+    return { cores, mem: memVal, workers, tier };
   };
 
   useEffect(() => {
     const initializePool = async () => {
       try {
         await prepareWorkerEnvironment();
-        const count = decideWorkerCount();
+        const profile = decideWorkerProfile();
+        setWorkerProfile(profile);
+        const count = profile.workers;
         for (let i = 0; i < count; i++) {
           workerPool.current.push(initWorker());
         }
@@ -432,6 +451,12 @@ const scanZip = async (zipObj: any, labelStack: string[], depth: number) => {
                 <span className="text-yellow-300 font-black uppercase tracking-widest mr-2">Heads up:</span>
                 This is beta. With a lot of images (and depending on your computer specs), you may see bugs, crashes, or freezes. We’re optimizing it as we speak.
               </p>
+              {workerProfile && (
+                <p className="mt-2 text-[11px] text-white/70 font-semibold leading-relaxed">
+                  <span className="text-white/80 font-black uppercase tracking-widest mr-2">Auto-detected:</span>
+                  {workerProfile.tier} • {workerProfile.cores} cores • {workerProfile.mem == null ? 'RAM unknown' : `${workerProfile.mem}GB RAM`} • Using {workerProfile.workers} worker{workerProfile.workers === 1 ? '' : 's'}
+                </p>
+              )}
             </div>
           </div>
         </div>
