@@ -78,7 +78,7 @@ const FinishModal: React.FC<FinishModalProps> = ({
             </div>
             <div className="flex justify-between py-4 items-center">
               <span className="text-white uppercase tracking-widest text-[10px] font-bold">Resolution Status</span>
-              <span className="text-2xl font-black text-emerald-500 uppercase tracking-tighter shadow-emerald-500/20">{hasJpeg ? (hasNonJpeg ? 'PNG: 300 DPI • JPG: 72 DPI' : 'VERIFIED 72 DPI') : 'VERIFIED 300 DPI'}</span>
+              <span className="text-2xl font-black text-emerald-500 uppercase tracking-tighter shadow-emerald-500/20">{hasJpeg ? (hasNonJpeg ? 'PNG: 300 DPI • JPG: 300 DPI' : 'VERIFIED 300 DPI') : 'VERIFIED 300 DPI'}</span>
             </div>
           </div>
 

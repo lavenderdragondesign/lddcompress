@@ -33,6 +33,83 @@ const workerCode = `
     return newBuffer;
   }
 
+
+  function injectJpegDPI(bytes, dpi) {
+    // Embed/overwrite JFIF density so the JPEG reports the desired DPI.
+    // Note: DPI is metadata; print "resolution" is still pixel-dimension based.
+    if (!bytes || bytes.length < 4) return bytes;
+    // Must start with SOI
+    if (bytes[0] !== 0xFF || bytes[1] !== 0xD8) return bytes;
+
+    const makeAPP0 = () => {
+      // APP0 length = 16 (0x0010) including the two length bytes
+      // Marker (2) + length(2) + "JFIF\0"(5) + ver(2) + units(1) + Xden(2) + Yden(2) + Xthumb(1) + Ythumb(1)
+      const out = new Uint8Array(2 + 2 + 16);
+      let o = 0;
+      out[o++] = 0xFF; out[o++] = 0xE0;
+      out[o++] = 0x00; out[o++] = 0x10;
+      // "JFIF\0"
+      out[o++] = 0x4A; out[o++] = 0x46; out[o++] = 0x49; out[o++] = 0x46; out[o++] = 0x00;
+      // version 1.02
+      out[o++] = 0x01; out[o++] = 0x02;
+      // units: 1 = dots per inch
+      out[o++] = 0x01;
+      // X density
+      out[o++] = (dpi >> 8) & 0xFF; out[o++] = dpi & 0xFF;
+      // Y density
+      out[o++] = (dpi >> 8) & 0xFF; out[o++] = dpi & 0xFF;
+      // thumbnails
+      out[o++] = 0x00; out[o++] = 0x00;
+      return out;
+    };
+
+    // Walk markers until SOS (0xFFDA) and look for APP0 JFIF.
+    let i = 2;
+    while (i + 4 < bytes.length) {
+      if (bytes[i] !== 0xFF) { i++; continue; }
+
+      // Skip fill bytes FF FF...
+      while (i < bytes.length && bytes[i] === 0xFF) i++;
+      if (i >= bytes.length) break;
+
+      const marker = bytes[i];
+      i++;
+
+      // Standalone markers without length
+      if (marker === 0xD8 || marker === 0xD9) continue; // SOI/EOI
+      if (marker >= 0xD0 && marker <= 0xD7) continue;   // RSTn
+      if (marker === 0x01) continue;                    // TEM
+
+      // Start of Scan: stop searching
+      if (marker === 0xDA) break;
+
+      if (i + 1 >= bytes.length) break;
+      const segLen = (bytes[i] << 8) | bytes[i + 1];
+      if (segLen < 2 || i + segLen > bytes.length) break;
+
+      if (marker === 0xE0 && segLen >= 16) {
+        // Check for "JFIF\0"
+        const id0 = bytes[i + 2], id1 = bytes[i + 3], id2 = bytes[i + 4], id3 = bytes[i + 5], id4 = bytes[i + 6];
+        if (id0 === 0x4A && id1 === 0x46 && id2 === 0x49 && id3 === 0x46 && id4 === 0x00) {
+          // Units at i+9, densities at i+10..13
+          bytes[i + 9] = 0x01; // inches
+          bytes[i + 10] = (dpi >> 8) & 0xFF; bytes[i + 11] = dpi & 0xFF;
+          bytes[i + 12] = (dpi >> 8) & 0xFF; bytes[i + 13] = dpi & 0xFF;
+          return bytes;
+        }
+      }
+
+      i += segLen;
+    }
+
+    // No JFIF APP0 found; insert right after SOI
+    const app0 = makeAPP0();
+    const out = new Uint8Array(bytes.length + app0.length);
+    out.set(bytes.slice(0, 2), 0);
+    out.set(app0, 2);
+    out.set(bytes.slice(2), 2 + app0.length);
+    return out;
+  }
   async function processFile(file, paletteSize) {
     const isPng = file.mimeType === 'image/png' || file.name.toLowerCase().endsWith('.png');
     
@@ -64,12 +141,14 @@ const workerCode = `
       });
       const arrayBuffer = await outputBlob.arrayBuffer();
       const finalData = new Uint8Array(arrayBuffer);
+      const isJpeg = file.mimeType === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
+      const outData = isJpeg ? injectJpegDPI(finalData, 300) : finalData;
       
       return {
         name: file.name,
-        data: finalData,
+        data: outData,
         originalSize: file.size,
-        newSize: finalData.length,
+        newSize: outData.length,
         mimeType: file.mimeType
       };
     }
